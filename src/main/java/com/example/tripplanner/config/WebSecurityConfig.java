@@ -1,6 +1,10 @@
 package com.example.tripplanner.config;
 
 import com.example.tripplanner.member.service.MemberDetailService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +14,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,10 +26,12 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
     private final MemberDetailService memberService;
 
     @Bean
     public WebSecurityCustomizer configure(){
+
     return (web) -> web.ignoring()
             .requestMatchers(toH2Console())
             .requestMatchers("/static/**");
@@ -30,10 +39,12 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf().disable()  // CSRF 비활성화
                 .cors(Customizer.withDefaults())  // CORS 기본 설정
-
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .formLogin(formLogin ->
                         formLogin.loginPage("/login")
                                 .permitAll()  // 로그인 페이지는 모든 사용자에게 공개
@@ -41,9 +52,7 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers("/login","/signup").permitAll()  // /login 경로에 대한 접근 허용
-                                .anyRequest().permitAll()
-                        //여기서 authenticated()가 아니라 permitAll()로 코드 구현하면 무한 redirect은 안되는데, 그 이유는 현재 로그인 할 수 없다보니 로그인 안한 사용자라서 계속 login 페이지를 리다이렉션 하는 것
-                )
+                                .anyRequest().permitAll())
                 .logout()
                 .permitAll();
 

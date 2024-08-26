@@ -25,7 +25,7 @@ public class Member implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String name;
 
     @Column(nullable = false, length = 255)
@@ -34,22 +34,22 @@ public class Member implements UserDetails {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String gender;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String birth; //
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String mbti;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String bio;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime loginAt;
 
     @Builder
@@ -60,18 +60,18 @@ public class Member implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_MEMBER"));
+        return List.of(new SimpleGrantedAuthority("member"));
     }
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     //계정 만료 여부 확인
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     //계정 잠금 여부 반환
@@ -83,12 +83,12 @@ public class Member implements UserDetails {
     //패스워드 만료 여부 반환
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     //계정 사용 가능 여부 반환
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
 }
