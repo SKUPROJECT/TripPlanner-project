@@ -52,6 +52,9 @@ public class Member implements UserDetails {
     @Column(nullable = true)
     private LocalDateTime loginAt;
 
+    @Column(columnDefinition = "json")
+    private List<String> interests;
+
     @Builder
     public Member(String email, String password, String auth){
         this.email = email;
