@@ -1,28 +1,35 @@
 package com.example.tripplanner.member.service;
 
-import com.example.tripplanner.member.dto.AddMemberRequest;
-import com.example.tripplanner.member.entity.Member;
+import com.example.tripplanner.member.dto.MemberDTO;
+import com.example.tripplanner.member.entity.MemberEntity;
+import com.example.tripplanner.member.exception.MemberExceptions;
 import com.example.tripplanner.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+import java.util.Optional;
+
 @Service
+@RequiredArgsConstructor
+@Log4j2
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Long save(AddMemberRequest dto) {
-        return memberRepository.save(Member.builder()
-                .email(dto.getEmail())
-                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
-                .build()).getId();
-    }
+    private final PasswordEncoder passwordEncoder;
 
-    public Member findById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(()->new IllegalArgumentException("Unexpected member"));
+    public MemberDTO read(String mid, String mpw){
+        Optional<MemberEntity> result = memberRepository.findById(mid);
+        MemberEntity memberEntity = result.orElseThrow(MemberExceptions.NOT_FOUND::get);
+
+        if(!passwordEncoder.matches(mpw, memberEntity.getMpw())){
+            throw MemberExceptions.BAD_CREDENTIALS.get();
+        }
+
+        return new MemberDTO(memberEntity);
     }
 }
