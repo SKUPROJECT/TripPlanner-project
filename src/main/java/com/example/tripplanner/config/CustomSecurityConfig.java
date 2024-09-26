@@ -43,13 +43,22 @@ public class CustomSecurityConfig {
            httpSecurityFormLoginConfigurer.disable();
         });
 
+        // 같은 도메인에서 요청할 때 Frame 로드 될 수 있도록 허용 (dev h2-console)
+        httpSecurity.headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())
+        );
+
         httpSecurity.logout(config->config.disable());
+
+        // csrf 비활성화 (무상태 Stateless )
         httpSecurity.csrf(config->{config.disable();});
+
+        // 세션 생성 정책을 설정하는 부분 (Spring 에서 새로운 세션을 생성하지 않도록 설정, 기존 세션만 사용)
         httpSecurity.sessionManagement(sessionManagementConfigurer->{
            sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.NEVER);
         });
 
-        /* JWT 필터를 앞에 지정 */
+        /* JWT 토큰 감지 필터를 앞에 지정 */
         httpSecurity.addFilterBefore(jwtCheckFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();

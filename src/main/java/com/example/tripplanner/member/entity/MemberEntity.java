@@ -37,20 +37,4 @@ public class MemberEntity {
     private LocalDateTime modifiedDate;
 
     private String role;
-
-    private void changePassword(String password){
-        this.mpw = password;
-    }
-
-    private void changeName(String name){
-        this.mname = name;
-    }
-
-    public void changeEmail(String email){
-        this.email = email;
-    }
-
-    public void changeRole(String role){
-        this.role = role;
-    }
 }

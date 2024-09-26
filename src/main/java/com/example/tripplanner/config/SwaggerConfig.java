@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
+        // Swagger에서 제공하는 OpenAPI 객체를 생성하고 반환
         return new OpenAPI()
                 .components(new Components())
                 .info(apiInfo());

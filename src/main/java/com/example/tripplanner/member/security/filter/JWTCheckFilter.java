@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,24 +27,39 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
 
+    @Value("${boot.mode}")
+    private String mode;
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
-        if(request.getServletPath().startsWith("/api/v1/token")) return true;
+        /* 개발모드 일때 Swagger, h2-console 적용하기*/
+        if("DevMode".equals(mode)){
+            if(request.getServletPath().startsWith("/h2-console")) return true;
+            if(request.getServletPath().startsWith("/api-test")) return true;
+            if(request.getServletPath().startsWith("/swagger-ui")) return true;
+            if(request.getServletPath().startsWith("/v2/api-docs")) return true;
+            if(request.getServletPath().startsWith("/v3/api-docs")) return true;
+            if(request.getServletPath().startsWith("/swagger-resources")) return true;
+            if(request.getServletPath().startsWith("/webjars")) return true;
+        }
+
+        /* 실제 서비스 API에서 토큰없이 사용할 경로 */
+        if(request.getServletPath().startsWith("/api/v1/member/token")) return true;
         return false;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+                                    HttpServletResponse response, FilterChain filterChain) throws IOException {
 
         log.info("JWTCheckFilter doFilter........");
         log.info("requestURI:"+request.getRequestURI());
         String headerStr = request.getHeader("Authorization");
         log.info("headerStr:"+headerStr);
 
+        /* 토큰을 발급하고 Bearer 키워드를 붙여서 요청해야 된다.*/
         if(headerStr == null || !headerStr.startsWith("Bearer ")){
             handleException(response, new Exception("ACCESS TOKEN NOT FOUND"));
-
             return;
         }
 
@@ -57,7 +73,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String mid = tokenMap.get("mid").toString();
             String[] roles = tokenMap.get("role").toString().split(",");
 
-            // 토큰 검증 결과를 이용해서 Authentication 객체 생성
+            // 토큰 검증 결과를 이용해서 Authentication 객체 생성 (인증)
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     new CustomUserPrincipal(mid),null, Arrays.stream(roles)
                     .map(role -> new SimpleGrantedAuthority("ROLE_"+role))
@@ -70,7 +86,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-
         } catch(Exception e){
             handleException(response, e);
         }
@@ -81,6 +96,5 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
         response.getWriter().println("{\"error\": \"" + e.getMessage()+"\"})");
-
     }
 }

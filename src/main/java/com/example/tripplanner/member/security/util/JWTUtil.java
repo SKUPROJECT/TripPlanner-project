@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JWTUtil {
-    private static final String key = "12345678901234567890123456789012"; // 최소 32 바이트 이상 필요
+    private static final String key = "12345678901234567890123456789012"; /* Spring 에서 키 지정 */
 
     public String createToken(Map<String, Object> valueMap, int min) {
         SecretKey secretKey;

@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 @Log4j2
-public class TokenControllerAdvice {
+public class MemberControllerAdvice {
 
     @ExceptionHandler(MemberTaskException.class)
     public ResponseEntity<Map<String, String>> handleTaskException(MemberTaskException ex){

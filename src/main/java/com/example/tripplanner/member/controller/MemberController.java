@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/token")
+@RequestMapping("/api/v1/member")
 @Log4j2
 @RequiredArgsConstructor
-public class TokenController {
+public class MemberController {
 
     private final MemberService memberService;
 
     private final JWTUtil jwtUtil;
 
-    @PostMapping("/make")
+    @PostMapping("/token")
     public ResponseEntity<Map<String, String>> makeToken(@RequestBody MemberDTO memberDTO){
         log.info("make token .........");
         MemberDTO memberDTOResult = memberService.read(memberDTO.getMid(), memberDTO.getMpw());
@@ -30,7 +30,7 @@ public class TokenController {
 
         String mid = memberDTO.getMid();
         Map<String, Object> dataMap = memberDTOResult.getDataMap();
-        String accessToken = jwtUtil.createToken(dataMap, 10);
+        String accessToken = jwtUtil.createToken(dataMap, 60);
         String refreshToken = jwtUtil.createToken(Map.of("mid", mid), 60 * 24 * 7);
 
         log.info("accessToken : "+accessToken);
