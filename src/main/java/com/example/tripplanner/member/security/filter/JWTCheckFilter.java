@@ -35,7 +35,6 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         /* 개발모드 일때 Swagger, h2-console 적용하기*/
         if("DevMode".equals(mode)){
             if(request.getServletPath().startsWith("/h2-console")) return true;
-            if(request.getServletPath().startsWith("/api-test")) return true;
             if(request.getServletPath().startsWith("/swagger-ui")) return true;
             if(request.getServletPath().startsWith("/v2/api-docs")) return true;
             if(request.getServletPath().startsWith("/v3/api-docs")) return true;

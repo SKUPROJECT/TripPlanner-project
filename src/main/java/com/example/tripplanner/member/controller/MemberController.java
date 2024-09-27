@@ -70,7 +70,7 @@ public class MemberController {
             log.info("Access Token is not expired ...........");
 
             return ResponseEntity.ok(data);
-        } catch(ExpiredJwtException expiredJwtException){ /* 토큰이 만료될 시 */
+        } catch(ExpiredJwtException expiredJwtException){ /* 토큰이 만료될 시 (익셉션 에러) */
             try{
                 Map<String, String> newTokenMap = makeNewToken(mid, refreshToken);
                 return ResponseEntity.ok(newTokenMap);
