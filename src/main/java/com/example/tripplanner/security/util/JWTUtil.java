@@ -1,4 +1,4 @@
-package com.example.tripplanner.member.security.util;
+package com.example.tripplanner.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

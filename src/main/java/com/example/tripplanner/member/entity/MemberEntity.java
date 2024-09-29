@@ -22,11 +22,11 @@ import java.time.LocalDateTime;
 public class MemberEntity {
 
     @Id
-    private String mid;
+    private String id;
 
-    private String mpw;
+    private String pw;
 
-    private String mname;
+    private String name;
 
     private String email;
 

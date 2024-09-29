@@ -22,19 +22,19 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public MemberDTO read(String mid, String mpw){
-        Optional<MemberEntity> result = memberRepository.findById(mid);
+    public MemberDTO read(String id, String pw){
+        Optional<MemberEntity> result = memberRepository.findById(id);
         MemberEntity memberEntity = result.orElseThrow(MemberExceptions.NOT_FOUND::get);
 
-        if(!passwordEncoder.matches(mpw, memberEntity.getMpw())){
+        if(!passwordEncoder.matches(pw, memberEntity.getPw())){
             throw MemberExceptions.BAD_CREDENTIALS.get();
         }
 
         return new MemberDTO(memberEntity);
     }
 
-    public MemberDTO getByMid(String mid){
-        Optional<MemberEntity> result = memberRepository.findById(mid);
+    public MemberDTO getById(String id){
+        Optional<MemberEntity> result = memberRepository.findById(id);
         MemberEntity memberEntity = result.orElseThrow(MemberExceptions.NOT_FOUND::get);
 
         return new MemberDTO(memberEntity);

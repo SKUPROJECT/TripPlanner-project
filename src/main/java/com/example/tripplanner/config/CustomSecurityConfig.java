@@ -1,6 +1,6 @@
 package com.example.tripplanner.config;
 
-import com.example.tripplanner.member.security.filter.JWTCheckFilter;
+import com.example.tripplanner.security.filter.JWTCheckFilter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

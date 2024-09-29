@@ -1,9 +1,8 @@
-package com.example.tripplanner.member.security.filter;
+package com.example.tripplanner.security.filter;
 
-import com.example.tripplanner.member.security.auth.CustomUserPrincipal;
-import com.example.tripplanner.member.security.util.JWTUtil;
+import com.example.tripplanner.security.auth.CustomUserPrincipal;
+import com.example.tripplanner.security.util.JWTUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
     private String mode;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException{
+    protected boolean shouldNotFilter(HttpServletRequest request){
         /* 개발모드 일때 Swagger, h2-console 적용하기*/
         if("DevMode".equals(mode)){
             if(request.getServletPath().startsWith("/h2-console")) return true;
@@ -69,12 +68,12 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             // 토큰 검증 결과
             log.info("tokenMap: " + tokenMap);
 
-            String mid = tokenMap.get("mid").toString();
+            String id = tokenMap.get("id").toString();
             String[] roles = tokenMap.get("role").toString().split(",");
 
             // 토큰 검증 결과를 이용해서 Authentication 객체 생성 (인증)
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    new CustomUserPrincipal(mid),null, Arrays.stream(roles)
+                    new CustomUserPrincipal(id),null, Arrays.stream(roles)
                     .map(role -> new SimpleGrantedAuthority("ROLE_"+role))
                     .collect(Collectors.toList())
             );

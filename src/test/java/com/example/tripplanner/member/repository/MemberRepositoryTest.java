@@ -17,9 +17,9 @@ class MemberRepositoryTest {
     public void testInsert(){
         for (int i = 1; i <= 100; i++) {
             MemberEntity memberEntity = MemberEntity.builder()
-                    .mid("user"+i)
-                    .mpw(passwordEncoder.encode("1111"))
-                    .mname("USER"+i)
+                    .id("user"+i)
+                    .pw(passwordEncoder.encode("1111"))
+                    .name("USER"+i)
                     .email("user"+i+"@aaa.com")
                     .role(i <= 80 ? "USER" : "ADMIN")
                     .build();

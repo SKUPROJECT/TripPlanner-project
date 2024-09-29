@@ -14,9 +14,9 @@ import java.util.Map;
 @ToString
 public class MemberDTO {
 
-    private String mid;
-    private String mpw;
-    private String mname;
+    private String id;
+    private String pw;
+    private String name;
     private String email;
     private LocalDateTime joinDate;
     private LocalDateTime modifiedDate;
@@ -25,17 +25,17 @@ public class MemberDTO {
     /* 토큰발행에 필요한 항목 */
     public Map<String, Object> getDataMap(){
         Map<String, Object> map = new HashMap<>();
-        map.put("mid", mid);
-        map.put("mname", mname);
+        map.put("id", id);
+        map.put("name", name);
         map.put("email", email);
         map.put("role", role);
         return map;
     }
 
     public MemberDTO(MemberEntity memberEntity){
-        this.mid = memberEntity.getMid();
-        this.mpw = memberEntity.getMpw();
-        this.mname = memberEntity.getMname();
+        this.id = memberEntity.getId();
+        this.pw = memberEntity.getPw();
+        this.name = memberEntity.getName();
         this.email = memberEntity.getEmail();
         this.joinDate = memberEntity.getJoinDate();
         this.modifiedDate = memberEntity.getModifiedDate();

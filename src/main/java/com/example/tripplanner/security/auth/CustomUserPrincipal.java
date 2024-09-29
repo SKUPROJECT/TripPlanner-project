@@ -1,4 +1,4 @@
-package com.example.tripplanner.member.security.auth;
+package com.example.tripplanner.security.auth;
 
 import lombok.RequiredArgsConstructor;
 
@@ -7,10 +7,10 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class CustomUserPrincipal implements Principal {
 
-    private final String mid;
+    private final String id;
 
     @Override
     public String getName() {
-        return mid;
+        return id;
     }
 }

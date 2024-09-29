@@ -46,9 +46,9 @@ class Runner implements ApplicationRunner {
         if("DevMode".equals(mode)){ /* 개발환경일 때 세팅 */
             for (int i = 1; i <= 10; i++) {
                 MemberEntity memberEntity = MemberEntity.builder()
-                        .mid("user"+i)
-                        .mpw(passwordEncoder.encode("1111"))
-                        .mname("USER"+i)
+                        .id("user"+i)
+                        .pw(passwordEncoder.encode("1111"))
+                        .name("USER"+i)
                         .email("user"+i+"@aaa.com")
                         .role(i <= 5 ? "USER" : "ADMIN")
                         .build();
