@@ -1,6 +1,9 @@
 package com.example.tripplanner.member.dto;
 
 import com.example.tripplanner.member.entity.MemberEntity;
+import com.example.tripplanner.member.memberEnum.Gender;
+import com.example.tripplanner.member.memberEnum.Mbti;
+import com.example.tripplanner.member.memberEnum.Role;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,17 +20,18 @@ public class MemberDTO {
     private String id;
     private String pw;
     private String name;
-    private String email;
+    private Gender gender;
+    private LocalDateTime birth;
+    private Mbti mbti;
+    private String bio;
     private LocalDateTime joinDate;
     private LocalDateTime modifiedDate;
-    private String role;
+    private Role role;
 
-    /* 토큰발행에 필요한 항목 */
     public Map<String, Object> getDataMap(){
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
         map.put("name", name);
-        map.put("email", email);
         map.put("role", role);
         return map;
     }
@@ -36,7 +40,9 @@ public class MemberDTO {
         this.id = memberEntity.getId();
         this.pw = memberEntity.getPw();
         this.name = memberEntity.getName();
-        this.email = memberEntity.getEmail();
+        this.birth = memberEntity.getBirth();
+        this.mbti = memberEntity.getMbti();
+        this.bio = memberEntity.getBio();
         this.joinDate = memberEntity.getJoinDate();
         this.modifiedDate = memberEntity.getModifiedDate();
         this.role = memberEntity.getRole();

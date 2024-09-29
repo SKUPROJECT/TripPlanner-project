@@ -64,7 +64,7 @@ public class MemberController {
 
     @PostMapping("/refresh")
     @Operation(summary = "로그인 토큰 재발급 API",
-            description = "토큰정보 만료 시 헤더에 액세스 토큰과 바디에 리프레시 토큰정보를 전달받아 액세스 토큰을 재발급 합니다.<br>" +
+            description = "토큰정보 만료 시 헤더에 액세스 토큰과 바디에 리프레시 토큰정보를 전달받아 액세스 토큰을 재발급 합니다.<br><br>" +
                     "** 만료일자가 지나지 않은 액세스 토큰 요청 시에는 요청한 토큰 정보를 반환합니다."
             ,security = @SecurityRequirement(name = "Authorization"))
     @ApiResponses(value = {

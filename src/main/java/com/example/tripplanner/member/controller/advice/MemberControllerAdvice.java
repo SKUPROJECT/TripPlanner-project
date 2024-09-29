@@ -16,13 +16,13 @@ import java.util.Map;
 public class MemberControllerAdvice {
 
     @ExceptionHandler(MemberTaskException.class)
-    public ResponseEntity<Map<String, String>> handleTaskException(MemberTaskException ex){
+    public ResponseEntity<Map<String, Object>> handleTaskException(MemberTaskException ex){
         log.error(ex.getMessage());
 
         String msg = ex.getMsg();
         int status = ex.getCode();
 
-        Map<String, String> map = Map.of("error", msg);
+        Map<String, Object> map = Map.of("code", status, "error", msg);
         return ResponseEntity.status(status).body(map);
     }
 
