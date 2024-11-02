@@ -6,6 +6,7 @@ import com.example.tripplanner.member.memberEnum.Mbti;
 import com.example.tripplanner.member.memberEnum.Role;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class MemberDTO {
     private String pw;
     private String name;
     private Gender gender;
-    private LocalDateTime birth;
+    private LocalDate birth;
     private Mbti mbti;
     private String bio;
     private LocalDateTime joinDate;

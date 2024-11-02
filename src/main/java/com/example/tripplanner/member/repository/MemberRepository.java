@@ -1,6 +1,7 @@
 package com.example.tripplanner.member.repository;
 
 import com.example.tripplanner.member.entity.MemberEntity;
+import com.example.tripplanner.member.memberEnum.Auth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

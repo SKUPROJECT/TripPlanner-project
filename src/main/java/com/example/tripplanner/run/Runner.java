@@ -1,6 +1,7 @@
 package com.example.tripplanner.run;
 
 import com.example.tripplanner.member.entity.MemberEntity;
+import com.example.tripplanner.member.memberEnum.Auth;
 import com.example.tripplanner.member.memberEnum.Gender;
 import com.example.tripplanner.member.memberEnum.Mbti;
 import com.example.tripplanner.member.memberEnum.Role;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -54,10 +56,11 @@ class Runner implements ApplicationRunner {
                         .pw(passwordEncoder.encode("1234"))
                         .name("USER"+i)
                         .gender(Gender.MAIL)
-                        .birth(LocalDateTime.now())
+                        .birth(LocalDate.now())
                         .mbti(Mbti.ENFJ)
                         .bio("테스트 계정 입니다.")
                         .role(i <= 5 ? Role.USER : Role.ADMIN)
+                        .auth(Auth.U)
                         .build();
 
                 memberRepository.save(memberEntity);
