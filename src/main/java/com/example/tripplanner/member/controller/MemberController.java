@@ -1,6 +1,7 @@
 package com.example.tripplanner.member.controller;
 
 import com.example.tripplanner.member.dto.MemberDTO;
+import com.example.tripplanner.member.dto.MemberInfoDTO;
 import com.example.tripplanner.member.dto.TokenResponseDTO;
 import com.example.tripplanner.security.util.JWTUtil;
 import com.example.tripplanner.member.service.MemberService;
@@ -136,6 +137,23 @@ public class MemberController {
         log.info("refreshToken : "+refreshToken);
         log.info("id :" + memberDTO.getId());
         return ResponseEntity.ok(makeData(accessToken, refreshToken, memberDTO.getId()));
+    }
+
+    @PostMapping("/getMemeber")
+    @Operation(summary = "프로필 조회 API",
+            description = "로그인 후 프로필 정보를 조회 합니다."
+            ,security = @SecurityRequirement(name = "Authorization"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "프로필 조회 성공", content = @Content(mediaType = "application/json",schema = @Schema(implementation = MemberInfoDTO.class))),
+            @ApiResponse(responseCode = "404", description = "프로필 정보 없음", content = @Content(mediaType = "application/json")),
+    })
+    private ResponseEntity<MemberInfoDTO> getMember(
+            @Parameter(name = "id", description = "사용자 아이디", required=true)
+            @RequestParam("id") String id
+    ){
+        MemberInfoDTO memberDTO = memberService.getMemberById(id);
+        return ResponseEntity.ok(memberDTO);
+
     }
 
     private ResponseEntity<Map<String, String>> handleException(String msg){

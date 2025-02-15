@@ -1,6 +1,7 @@
 package com.example.tripplanner.member.service;
 
 import com.example.tripplanner.member.dto.MemberDTO;
+import com.example.tripplanner.member.dto.MemberInfoDTO;
 import com.example.tripplanner.member.dto.TokenResponseDTO;
 import com.example.tripplanner.member.entity.MemberEntity;
 import com.example.tripplanner.member.exception.MemberExceptions;
@@ -52,6 +53,13 @@ public class MemberService {
         MemberEntity memberEntity = result.orElseThrow(MemberExceptions.NOT_FOUND::get);
 
         return new MemberDTO(memberEntity);
+    }
+
+    public MemberInfoDTO getMemberById(String id){
+        Optional<MemberEntity> result = memberRepository.findById(id);
+        MemberEntity memberEntity = result.orElseThrow(MemberExceptions.NOT_FOUND::get);
+
+        return new MemberInfoDTO(memberEntity);
     }
 
     public MemberDTO googleLogin(String googleToken, String type){

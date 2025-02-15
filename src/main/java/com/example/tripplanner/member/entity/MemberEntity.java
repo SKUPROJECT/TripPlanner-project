@@ -12,6 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="tbl_members")
@@ -45,6 +47,9 @@ public class MemberEntity {
     @Column(name = "birth", nullable = false)
     private LocalDate birth;
 
+    @Column(name = "profileImgUrl", length = 255)
+    private String profileImageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "mbti", nullable = false, length = 4)
     private Mbti mbti;
@@ -67,4 +72,11 @@ public class MemberEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "auth", nullable = false, length = 1)
     private Auth auth;
+
+    @OneToMany(mappedBy = "follwers")
+    private Set<FollowEntity> follows = new HashSet<>();
+
+    @OneToMany(mappedBy = "following")
+    private Set<FollowEntity> following = new HashSet<>();
+
 }
