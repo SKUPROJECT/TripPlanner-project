@@ -1,14 +1,13 @@
 package com.example.tripplanner.member.controller;
 
 import com.example.tripplanner.member.dto.MemberDTO;
+import com.example.tripplanner.member.dto.MemberInfoDTO;
 import com.example.tripplanner.member.dto.TokenResponseDTO;
 import com.example.tripplanner.security.util.JWTUtil;
 import com.example.tripplanner.member.service.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,14 +51,13 @@ public class MemberController {
 
         log.info(memberDTOResult);
 
-        Map<String, Object> dataMap = memberDTOResult.getDataMap();
-        String accessToken = jwtUtil.createToken(dataMap, 10);
+        String accessToken = jwtUtil.createToken(memberDTOResult.getDataMap(), 10);
         String refreshToken = jwtUtil.createToken(Map.of("id", memberDTOResult.getId()), 60 * 24 * 7);
 
         log.info("accessToken : "+accessToken);
         log.info("refreshToken : "+refreshToken);
 
-        return ResponseEntity.ok(makeData(accessToken, refreshToken));
+        return ResponseEntity.ok(makeData(accessToken, refreshToken, memberDTOResult.getId()));
     }
 
     @PostMapping("/refresh")
@@ -81,24 +79,24 @@ public class MemberController {
 
         log.info("access token with Bearer........." + accessTokenStr);
         if(accessTokenStr == null || !accessTokenStr.startsWith("Bearer ")){
-            return handleException("No Access Token", 400);
+            return handleException("No Access Token");
         }
 
         if(refreshToken == null){
-            return handleException("No Refresh Token", 400);
+            return handleException("No Refresh Token");
         }
 
         log.info("refresh token ......."+refreshToken);
 
         if(id == null){
-            return handleException("No id", 400);
+            return handleException("No id");
         }
 
         String accessToken = accessTokenStr.substring(7);
 
         try{
             jwtUtil.validateToken(accessToken);
-            Map<String, String> data = makeData(accessToken, refreshToken);
+            Map<String, String> data = makeData(accessToken, refreshToken, id);
 
             log.info("Access Token is not expired ...........");
 
@@ -108,19 +106,62 @@ public class MemberController {
                 Map<String, String> newTokenMap = makeNewToken(id, refreshToken);
                 return ResponseEntity.ok(newTokenMap);
             } catch(Exception e){
-                return handleException("REFRESH "+e.getMessage(), 400);
+                return handleException("REFRESH "+e.getMessage());
             }
         }catch(Exception e){
-            return handleException(e.getMessage(), 400);
+            return handleException(e.getMessage());
         }
     }
 
-    private ResponseEntity<Map<String, String>> handleException(String msg, int status){
-        return ResponseEntity.status(status).body(Map.of("error", msg));
+    @PostMapping("/googleLogin")
+    @Operation(summary = "구글 가입 및 로그인 API",
+            description = "가입된 구글 정보가 없을 시 회원 가입 후 액세스 토큰과 리프레시 토큰을 반환합니다.<br>" +
+                    "구글이메일로 일반 회원가입을 하고 구글 로그인을 진행했을 때 따로 가입하지 않고 기존 구글 아이디를 사용합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구글 가입 및 로그인 성공", content = @Content(mediaType = "application/json",schema = @Schema(implementation = TokenResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "구글 사용자 정보가 없음", content = @Content(mediaType = "application/json")),
+    })
+    public ResponseEntity<Map<String, String>> googleLogin(
+            @Parameter(description = "구글에서 제공 받은 액세스 토큰", required = true)
+            @RequestParam("googleToken") String googleToken,
+            @Parameter(description = "토큰 타입", required = true)
+            @RequestParam("type") String type
+    ){
+
+        MemberDTO memberDTO = memberService.googleLogin(googleToken, type);
+
+        String accessToken = jwtUtil.createToken(memberDTO.getDataMap(), 10);
+        String refreshToken = jwtUtil.createToken(Map.of("id", memberDTO.getId()), 60 * 24 * 7);
+
+        log.info("accessToken : "+accessToken);
+        log.info("refreshToken : "+refreshToken);
+        log.info("id :" + memberDTO.getId());
+        return ResponseEntity.ok(makeData(accessToken, refreshToken, memberDTO.getId()));
     }
 
-    private Map<String, String> makeData(String accessToken, String refreshToken){
-        return Map.of("accessToken", accessToken, "refreshToken" , refreshToken);
+    @PostMapping("/getMemeber")
+    @Operation(summary = "프로필 조회 API",
+            description = "로그인 후 프로필 정보를 조회 합니다."
+            ,security = @SecurityRequirement(name = "Authorization"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "프로필 조회 성공", content = @Content(mediaType = "application/json",schema = @Schema(implementation = MemberInfoDTO.class))),
+            @ApiResponse(responseCode = "404", description = "프로필 정보 없음", content = @Content(mediaType = "application/json")),
+    })
+    private ResponseEntity<MemberInfoDTO> getMember(
+            @Parameter(name = "id", description = "사용자 아이디", required=true)
+            @RequestParam("id") String id
+    ){
+        MemberInfoDTO memberDTO = memberService.getMemberById(id);
+        return ResponseEntity.ok(memberDTO);
+
+    }
+
+    private ResponseEntity<Map<String, String>> handleException(String msg){
+        return ResponseEntity.status(400).body(Map.of("error", msg));
+    }
+
+    private Map<String, String> makeData(String accessToken, String refreshToken, String id){
+        return Map.of("accessToken", accessToken, "refreshToken" , refreshToken, "id", id);
     }
 
     private Map<String, String> makeNewToken(String id, String refreshToken){
@@ -136,6 +177,6 @@ public class MemberController {
         String newAccessToken = jwtUtil.createToken(newClaims, 10);
         String newRefreshToken = jwtUtil.createToken(Map.of("id", id), 60 * 24 * 7);
 
-        return makeData(newAccessToken, newRefreshToken);
+        return makeData(newAccessToken, newRefreshToken, id);
     }
 }

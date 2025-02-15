@@ -1,5 +1,6 @@
 package com.example.tripplanner.member.entity;
 
+import com.example.tripplanner.member.memberEnum.Auth;
 import com.example.tripplanner.member.memberEnum.Gender;
 import com.example.tripplanner.member.memberEnum.Mbti;
 import com.example.tripplanner.member.memberEnum.Role;
@@ -9,7 +10,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="tbl_members")
@@ -41,7 +45,10 @@ public class MemberEntity {
     private Gender gender;
 
     @Column(name = "birth", nullable = false)
-    private LocalDateTime birth;
+    private LocalDate birth;
+
+    @Column(name = "profileImgUrl", length = 255)
+    private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mbti", nullable = false, length = 4)
@@ -61,4 +68,15 @@ public class MemberEntity {
     @LastModifiedDate
     @Column(name = "modifiedDate")
     private LocalDateTime modifiedDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth", nullable = false, length = 1)
+    private Auth auth;
+
+    @OneToMany(mappedBy = "follwers")
+    private Set<FollowEntity> follows = new HashSet<>();
+
+    @OneToMany(mappedBy = "following")
+    private Set<FollowEntity> following = new HashSet<>();
+
 }

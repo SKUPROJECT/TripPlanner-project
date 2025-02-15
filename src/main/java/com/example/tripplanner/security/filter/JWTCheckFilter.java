@@ -43,6 +43,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
         /* 실제 서비스 API에서 토큰없이 사용할 경로 */
         if(request.getServletPath().startsWith("/api/v1/member/token")) return true;
+        if(request.getServletPath().startsWith("/api/v1/member/googleLogin")) return true;
+
         return false;
     }
 
